@@ -1,14 +1,14 @@
 # Use Firebase Functions as authentication service
 
-This blog post will show you how to use the Google Firebase Functions to build an authentication service for the Dolby.io SDK. We, at Dolby.io, consistently think about security and how to help our customers building applications and services that are following [security best practices](https://dolby.io/developers/interactivity-apis/guides/security-best-practices). As an example, we recently introduced the [Enhanced Conference Access Control](https://dolby.io/developers/interactivity-apis/guides/enhanced-conference-access-control) capability that allows you to set permissions for your users joining conferences.
+This blog post will show you how to use the Google Firebase Functions to build an authentication service for the Dolby.io SDK. At Dolby.io, we consistently think about security and how to help our customers build applications and services that follow [security best practices](https://dolby.io/developers/interactivity-apis/guides/security-best-practices). As an example, we recently introduced the [Enhanced Conference Access Control](https://dolby.io/developers/interactivity-apis/guides/enhanced-conference-access-control) capability that allows you to set permissions for your users joining conferences.
 
 ## Introduction
 
-In this post post I want to focus on the initialization of the SDK in your applications. In the past, when you wanted to create an application that requires no backend to work, it was quite difficult to avoid hardcoding the Consumer Key and Consumer Secret. There are a few problems there. If your key and secret are hardcoded into your applications, you can consider that anyone (with a minimum of knowledge) can capture them, by either decompiling your application or by listening to the traffic going through the authentication endpoint. Now, let say you need to use a new key for your applications, you will need to build a new version of your application and have all of your users to upgrade at the same time if you want them to be able to communicate with each other (You cannot join a conference created with another consumer key). This is not practical for many users.
+In this blog post I want to focus on the initialization of the SDK in your applications. In the past, when you wanted to create an application that requires no backend to work, it was quite difficult to avoid hardcoding the Consumer Key and Consumer Secret. There are a few problems there. If your key and secret are hardcoded into your applications, you can consider that anyone (with minimal knowledge) can capture them, by either decompiling your application or by listening to the traffic going through the authentication endpoint. Now, lets say you need to use a new key for your applications, you will need to build a new version of your application and have all of your users upgrade at the same time if you want them to be able to communicate with each other (you cannot join a conference created with another consumer key). This is not practical for many users.
 
-To avoid this, we recommend our customers to use a backend with a protected endpoint that will allow to generate an access token that can be used by your applications to initialize the SDK. But creating and maintaining a server for only this endpoint can become very expensive and time consuming, as you need to make sure it scales with the load of your application, you need failover, you need to update the server with the latest patch updates... This is 2021 and all the major cloud providers are now offering a serverless service; [Azure Functions](https://azure.microsoft.com/en-us/services/functions/), [AWS Lambda](https://aws.amazon.com/lambda/) and [Google Cloud Functions](https://cloud.google.com/functions). The advantage of running a cloud function for this kind of workload is that you do not have to maintain a server, you do not have to worry about scaling and the cost is minimal.
+To avoid this, we recommend that our customers use a backend with a protected endpoint that will generate an access token that can be used by your applications to initialize the SDK. But creating and maintaining a server for only this endpoint can become very expensive and time consuming. You need to make sure it scales with the load of your application, you need failover, and you need to update the server with the latest patch updates. This is 2021 and all of the major cloud providers are now offering a serverless service; [Azure Functions](https://azure.microsoft.com/en-us/services/functions/), [AWS Lambda](https://aws.amazon.com/lambda/) and [Google Cloud Functions](https://cloud.google.com/functions). The advantage of running a cloud function for this kind of workload is that you do not have to maintain a server; you do not have to worry about scaling and the cost is minimal.
 
-We are going to deploy a **Firebase Functions** that we will use to generate an access token to initialize the SDK. [Firebase Functions](https://firebase.google.com/docs/functions) are built on top of the Google Cloud function. As of writing this post, Google Cloud does not charge for the first two million execution for your function (see the [pricing](https://firebase.google.com/pricing) page for more details). Note that the Google Cloud Functions are running from containers and there is a cost associated with hosting a container registry.
+We are going to deploy a **Firebase Function** that we will use to generate an access token to initialize the SDK. [Firebase Functions](https://firebase.google.com/docs/functions) are built on top of the Google Cloud function. As of writing this post, Google Cloud does not charge for the first two million executions of your function (see the [pricing](https://firebase.google.com/pricing) page for more details). Note that the Google Cloud Functions are running from containers and there is a cost associated with hosting a container registry.
 
 ## Firebase Function
 
@@ -24,7 +24,7 @@ Log the CLI into Firebase:
 firebase login
 ```
 
-Create a folder where you want to have your code and initialize your project with the command:
+Create a folder where you want to have your code and initialize your project with the following command:
 
 ```bash
 firebase init
@@ -32,7 +32,7 @@ firebase init
 
 You will be asked what you want to set up in this folder, select *Functions: Configure and deploy Cloud Functions*. If you already have a Firebase project, select *Use an existing project*. Select the language you want to use to write the Cloud Function. I will provide you the code in [TypeScript](https://www.typescriptlang.org/). Use [ESLint](https://eslint.org/) to have a clean TypeScript code, then install the dependencies with NPM.
 
-Open the file `functions/src/index.ts`. This will be the code of your function. Replace the content with the following code. Make sure to replace your *CONSUMER_KEY* and *CONSUMER_SECRET*. You can go one step further if you want to protect these by using the [Secret Manager](https://cloud.google.com/secret-manager) from Google Cloud.
+Open the `functions/src/index.ts` file. This will be the code of your function. Replace the content with the following code. Make sure to replace your *CONSUMER_KEY* and *CONSUMER_SECRET*. You can go one step further if you want to protect these by using the [Secret Manager](https://cloud.google.com/secret-manager) from Google Cloud.
 
 ```typescript
 import * as functions from "firebase-functions";
@@ -119,15 +119,15 @@ Deploy this function to your Firebase project:
 firebase deploy
 ```
 
-Log into the [Firebase Dashboard](https://console.firebase.google.com/), navigate to your Firebase project and select the Functions in the Build menu.
+Log into the [Firebase Dashboard](https://console.firebase.google.com/), navigate to your Firebase project, and select Functions in the Build menu.
 
 ![Firebase Functions Dashboard](wiki/functions-dashboard.png)
 
 After a few seconds you will see your `getAccessToken` function.
 
-> **Note:** the *Memory* is set to 256 MB automatically. Since the code is really small, you should be able to run it with only 128 MB. You can also lower the *timeout*. To change that, go to the Google Cloud console and update the function.
+> **Note:** The *Memory* is automatically set to 256 MB. Since the code is really small, you should be able to run it with only 128 MB. You can also lower the *timeout*. To change that, go to the Google Cloud console and update the function.
 
-And that was it, we have deployed an authentication service using a serverless service on Google Cloud. Now, we need to modify our applications to leverage this authentication service and remove, once and for all, the Consumer Key and Secret from the source code of your applications. This method of initialization will be deprecated in a future release of the SDKs across all platforms.
+And that was it, we have deployed an authentication service using a serverless service on Google Cloud. Now, we need to modify our applications to leverage this authentication service and remove, once and for all, the Consumer Key and Consumer Secret from the source code of your applications. This method of initialization will be deprecated in a future release of the SDKs across all platforms.
 
 ## Android implementation
 
@@ -151,7 +151,7 @@ implementation 'com.google.firebase:firebase-analytics'
 implementation 'com.google.firebase:firebase-functions'
 ```
 
-Download the file `google-services.json` from your Firebase dashboard and move it to the `app` folder of your Android project.
+Download the `google-services.json` file from your Firebase dashboard and move it to the `app` folder of your Android project.
 
 In your `MainActivity.java` file, add the following imports:
 
@@ -164,7 +164,7 @@ import com.google.firebase.functions.HttpsCallableResult;
 import java.util.HashMap;
 ```
 
-Create the following variable in the MainActivity class.
+Create the following variable in the MainActivity class:
 
 ```java
 private FirebaseFunctions mFunctions;
@@ -188,7 +188,7 @@ private Task<String> getAccessToken() {
 }
 ```
 
-In the `onCreate(Bundle savedInstanceState)` method, initialize the `mFunctions` variable, remove the deprecated `initialize` method and request an access token from Firebase Function to initialize the SDK.
+In the `onCreate(Bundle savedInstanceState)` method, initialize the `mFunctions` variable, remove the deprecated `initialize` method, and request an access token from Firebase Function to initialize the SDK.
 
 ```java
 mFunctions = FirebaseFunctions.getInstance();
@@ -216,7 +216,7 @@ getAccessToken()
         });
 ```
 
-That's it, the Android application is now using the Firebase Function to request an access token and initialize the SDK.
+That's it; the Android application is now using the Firebase Function to request an access token and initialize the SDK.
 
 ## iOS implementation
 
@@ -224,15 +224,15 @@ The following code is based on the [voxeet-sdk-ios-gettingstarted](https://githu
 
 ![Firebase Setup iOS](wiki/ios-config.png)
 
-Download the file `GoogleService-Info.plist` from your Firebase dashboard and move it to your application folder.
+Download the `GoogleService-Info.plist` file from your Firebase dashboard and move it to your application folder.
 
-Follow the instructions from the [Firebase Documentation](https://firebase.google.com/docs/ios/setup) to install Firebase in your iOS application. But in summary, you will need to initialize CocoaPods with the command:
+Follow the instructions from the [Firebase Documentation](https://firebase.google.com/docs/ios/setup) to install Firebase in your iOS application. But in summary, you will need to initialize CocoaPods with the following command:
 
 ```bash
 pod init
 ```
 
-Add the pod `Firebase/Functions` in the file `PodFile`. And install it with the command:
+Add the pod `Firebase/Functions` in the file `PodFile`. And install it with the following command:
 
 ```bash
 pod install
@@ -244,7 +244,7 @@ A new `.xcworkspace` file will be created, open it with Xcode and open the file 
 import Firebase
 ```
 
-Now, in the function `application` add the following code to initialize Firebase, request an access token and initialize the SDK.
+Now, in the function `application` add the following code to initialize Firebase, request an access token, and initialize the SDK:
 
 ```swift
 // Use Firebase library to configure APIs
@@ -276,13 +276,13 @@ functions.httpsCallable("getAccessToken").call() { (result, error) in
 //VoxeetSDK.shared.initialize(consumerKey: "YOUR_CONSUMER_KEY", consumerSecret: "YOUR_CONSUMER_SECRET")
 ```
 
-That's it, the iOS application is now using the Firebase Function to request an access token and initialize the SDK.
+That's it; the iOS application is now using the Firebase Function to request an access token and initialize the SDK.
 
 ## JavaScript implementation
 
 The following code is based on the [voxeet-sdk-browser-gettingstarted](https://github.com/voxeet/voxeet-sdk-browser-gettingstarted) GitHub repository.
 
-In the `<head>` of the file `index.html`, add the following scripts to load the [Firebase JavaScript SDK](https://github.com/firebase/firebase-js-sdk):
+In the `<head>` of the `index.html`file, add the following scripts to load the [Firebase JavaScript SDK](https://github.com/firebase/firebase-js-sdk):
 
 ```html
 <!-- Google Firebase SDK -->
@@ -296,7 +296,7 @@ Go to the list of applications from your project and select the web application 
 
 Select the **Config** radio button and copy the `firebaseConfig` variable.
 
-Open the file `client.js` and replace the `try {} catch {}` section with the following code:
+Open the `client.js` file and replace the `try {} catch {}` section with the following code:
 
 ```javascript
 // Your web app's Firebase configuration
@@ -339,4 +339,4 @@ try {
 }
 ```
 
-That's it, the JavaScript application is now using the Firebase Function to request an access token and initialize the SDK.
+That's it; the JavaScript application is now using the Firebase Function to request an access token and initialize the SDK.
