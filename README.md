@@ -220,6 +220,64 @@ That's it, the Android application is now using the Firebase Function to request
 
 ## iOS implementation
 
+The following code is based on the [voxeet-sdk-ios-gettingstarted](https://github.com/voxeet/voxeet-sdk-ios-gettingstarted) GitHub repository.
+
+![Firebase Setup iOS](wiki/ios-config.png)
+
+Download the file `GoogleService-Info.plist` from your Firebase dashboard and move it to your application folder.
+
+Follow the instructions from the [Firebase Documentation](https://firebase.google.com/docs/ios/setup) to install Firebase in your iOS application. But in summary, you will need to initialize CocoaPods with the command:
+
+```bash
+pod init
+```
+
+Add the pod `Firebase/Functions` in the file `PodFile`. And install it with the command:
+
+```bash
+pod install
+```
+
+A new `.xcworkspace` file will be created, open it with Xcode and open the file `AppDelegate.swift`. Add the following import:
+
+```swift
+import Firebase
+```
+
+Now, in the function `application` add the following code to initialize Firebase, request an access token and initialize the SDK.
+
+```swift
+// Use Firebase library to configure APIs
+FirebaseApp.configure()
+
+// Get the Firebase Functions
+let functions = Functions.functions()
+
+// Request an Access Token
+functions.httpsCallable("getAccessToken").call() { (result, error) in
+    if let jwt = result?.data as? NSDictionary {
+        let accessToken = jwt["access_token"] as! String
+        
+        // Voxeet SDK initialization
+        VoxeetSDK.shared.initialize(accessToken: accessToken, refreshTokenClosureWithParam: { closure, isExpired in
+            // Request a new Access Token
+            functions.httpsCallable("getAccessToken").call() { (result, error) in
+                if let jwt = result?.data as? NSDictionary {
+                    let accessToken = jwt["access_token"] as! String
+                    closure(accessToken)
+                } else {
+                    closure(nil)
+                }
+            }
+        })
+    }
+}
+
+//VoxeetSDK.shared.initialize(consumerKey: "YOUR_CONSUMER_KEY", consumerSecret: "YOUR_CONSUMER_SECRET")
+```
+
+That's it, the iOS application is now using the Firebase Function to request an access token and initialize the SDK.
+
 ## JavaScript implementation
 
 The following code is based on the [voxeet-sdk-browser-gettingstarted](https://github.com/voxeet/voxeet-sdk-browser-gettingstarted) GitHub repository.
