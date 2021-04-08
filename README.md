@@ -121,7 +121,7 @@ firebase deploy
 
 Log into the [Firebase Dashboard](https://console.firebase.google.com/), navigate to your Firebase project and select the Functions in the Build menu.
 
-![](wiki/functions-dashboard.png)
+![Firebase Functions Dashboard](wiki/functions-dashboard.png)
 
 After a few seconds you will see your `getAccessToken` function.
 
@@ -221,3 +221,64 @@ That's it, the Android application is now using the Firebase Function to request
 ## iOS implementation
 
 ## JavaScript implementation
+
+The following code is based on the [voxeet-sdk-browser-gettingstarted](https://github.com/voxeet/voxeet-sdk-browser-gettingstarted) GitHub repository.
+
+In the `<head>` of the file `index.html`, add the following scripts to load the [Firebase JavaScript SDK](https://github.com/firebase/firebase-js-sdk):
+
+```html
+<!-- Google Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-functions.js"></script>
+```
+
+Go to the list of applications from your project and select the web application you want to configure.
+
+![](wiki/javascript-config.png)
+
+Select the **Config** radio button and copy the `firebaseConfig` variable.
+
+Open the file `client.js` and replace the `try {} catch {}` section with the following code:
+
+```javascript
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+var firebaseConfig = {
+  apiKey: "B0s4d5s64d65s4564ds56f4d6s54f6d5s4f-saddf5fdsfDF65ds",
+  authDomain: "blog-post-01234.firebaseapp.com",
+  databaseURL: "https://blog-post-01234.firebaseio.com",
+  projectId: "blog-post-01234",
+  storageBucket: "blog-post-01234.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "1:000000000000:web:0000011111222224444455",
+  measurementId: "G-0000000000"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+try {
+  // Get the Firebase Function
+  const getAccessToken = firebase.functions().httpsCallable('getAccessToken');
+
+  // Request an access token
+  const result = await getAccessToken();
+  
+  // Initialize the SDK
+  VoxeetSDK.initializeToken(result.data.access_token, async () => {
+    // Refresh the Access Token
+    const result2 = await getAccessToken();
+    return result2.data.access_token;
+  });
+
+  // Open a session for the user
+  await VoxeetSDK.session.open({ name: randomName });
+
+  // Initialize the UI
+  initUI();
+} catch (e) {
+  alert('Something went wrong : ' + e);
+}
+```
+
+That's it, the JavaScript application is now using the Firebase Function to request an access token and initialize the SDK.
