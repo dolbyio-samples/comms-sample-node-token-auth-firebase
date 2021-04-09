@@ -244,33 +244,46 @@ A new `.xcworkspace` file will be created, open it with Xcode and open the file 
 import Firebase
 ```
 
-Now, in the function `application` add the following code to initialize Firebase, request an access token, and initialize the SDK:
+Add the following code that will allow us to request a new access token from the Firebase function:
+
+```swift
+// Get the Firebase Functions
+lazy var functions = Functions.functions()
+
+private func getAccessToken(success: @escaping ((_ accessToken: String) -> Void), fail: @escaping ((_ error: NSError?) -> Void)) {
+    // Request an Access Token
+    functions.httpsCallable("getAccessToken").call() { result, error in
+        guard let jwt = result?.data as? NSDictionary,
+              let accessToken = jwt["access_token"] as? String,
+              error == nil else {
+            fail(error as NSError?)
+            return
+        }
+        
+        success(accessToken)
+    }
+}
+```
+
+Now, in the function `application` add the following code to initialize Firebase and the SDK:
 
 ```swift
 // Use Firebase library to configure APIs
 FirebaseApp.configure()
 
-// Get the Firebase Functions
-let functions = Functions.functions()
-
 // Request an Access Token
-functions.httpsCallable("getAccessToken").call() { (result, error) in
-    if let jwt = result?.data as? NSDictionary {
-        let accessToken = jwt["access_token"] as! String
-        
-        // Voxeet SDK initialization
-        VoxeetSDK.shared.initialize(accessToken: accessToken, refreshTokenClosureWithParam: { closure, isExpired in
-            // Request a new Access Token
-            functions.httpsCallable("getAccessToken").call() { (result, error) in
-                if let jwt = result?.data as? NSDictionary {
-                    let accessToken = jwt["access_token"] as! String
-                    closure(accessToken)
-                } else {
-                    closure(nil)
-                }
-            }
-        })
-    }
+getAccessToken { accessToken in
+    // Voxeet SDK initialization
+    VoxeetSDK.shared.initialize(accessToken: accessToken, refreshTokenClosureWithParam: { closure, isExpired in
+        // Request a new Access Token
+        self.getAccessToken { newAccessToken in
+            closure(newAccessToken)
+        } fail: { error in
+            closure(nil)
+        }
+    })
+} fail: { error in
+    // Report an error.
 }
 
 //VoxeetSDK.shared.initialize(consumerKey: "YOUR_CONSUMER_KEY", consumerSecret: "YOUR_CONSUMER_SECRET")
