@@ -1,6 +1,6 @@
 # Use Firebase Functions as authentication service
 
-This blog post will show you how to use the Google Firebase Functions to build an authentication service for the Dolby.io Interactivity SDK. At Dolby.io, we consistently think about security and how to help our customers build applications and services that follow [security best practices](https://dolby.io/developers/interactivity-apis/guides/security-best-practices). As an example, we recently introduced the [Enhanced Conference Access Control](https://dolby.io/developers/interactivity-apis/guides/enhanced-conference-access-control) capability that allows you to set permissions for your users joining conferences.
+This blog post will show you how to use the Google Firebase Functions to build an authentication service with Node.JS (in TypeScript) for calling from each of the Android, iOS, and JavaScript Dolby.io Interactivity API SDKs. At Dolby.io, we consistently think about security and how to help our customers build applications and services that follow [security best practices](https://dolby.io/developers/interactivity-apis/guides/security-best-practices). As an example, we recently introduced the [Enhanced Conference Access Control](https://dolby.io/developers/interactivity-apis/guides/enhanced-conference-access-control) capability that allows you to set permissions for your users joining conferences.
 
 ## Introduction
 
