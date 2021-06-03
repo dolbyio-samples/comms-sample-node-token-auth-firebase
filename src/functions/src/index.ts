@@ -3,8 +3,8 @@ import * as http from "http";
 import * as https from "https";
 
 // Enter your Consumer Key and Secret from the dolby.io dashboard
-const CONSUMER_KEY = "CONSUMER_KEY";
-const CONSUMER_SECRET = "CONSUMER_SECRET";
+const CONSUMER_KEY = "bGycko--aiskluKdPCjrqA==";
+const CONSUMER_SECRET = "OoyIKx-7_93a_YSu6F4ofKeL73SYRWYYVty-pgvJL2M=";
 
 /**
  * Sends a POST request
