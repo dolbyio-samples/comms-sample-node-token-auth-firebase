@@ -8,7 +8,7 @@ This repository will deploy a Firebase Function that will be used to generate an
 In [this blog post](https://dolby.io/blog/using-firebase-functions-as-a-conferencing-authentication-service/), you will learn how to leverage Google Firebase Functions to create a secure authentication service using Node.js (with TypeScript) that can be utilized by the Dolby.io Interactivity API SDKs for Android, iOS, and JavaScript. The focus is on implementing security best practices, and it showcases the Enhanced Conference Access Control feature of Dolby.io, enabling you to configure permissions for users joining conferences.
 
 # Requirements
-To start out, you will need access to a [Dolby.io account](dolby.io) to utilize the Communications API, familiarity with Google Firebase, a development environment set up with Node.js and TypeScript, and knowledge of web development + JavaScript. A basic understanding of authentication concepts and practices would be good too. 
+To start out, you will need access to a [Dolby.io account](https://dolby.io/) to utilize the Communications API, familiarity with Google Firebase, a development environment set up with Node.js and TypeScript, and knowledge of web development + JavaScript. A basic understanding of authentication concepts and practices would be good too. 
 
 # Getting Started 
 Install the Firebase Tools on your machine using the following npm command (Node.JS):
