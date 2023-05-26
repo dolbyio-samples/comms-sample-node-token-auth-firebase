@@ -13,15 +13,21 @@ To start out, you will need access to a [Dolby.io account](https://dolby.io/) to
 # Getting Started 
 Install the Firebase Tools on your machine using the following npm command (Node.JS):
 
-<code> npm install -g firebase-tools </code>
+```sh 
+npm install -g firebase-tools
+```
 
 Log the CLI into Firebase:
 
-<code> firebase login </code>
+```sh 
+firebase login 
+```
 
 Create a folder where you want to have your code and initialize your project with the following command:
 
-<code> firebase init </code>
+```sh 
+firebase init
+```
 
 You will be asked what you want to set up in this folder, select Functions: Configure and deploy Cloud Functions. If you already have a Firebase project, select Use an existing project. Select the language you want to use to write the Cloud Function. I will provide you the code in TypeScript. Use ESLint to have a clean TypeScript code, then install the dependencies with NPM.
 
