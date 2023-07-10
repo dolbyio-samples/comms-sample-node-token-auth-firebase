@@ -1,6 +1,7 @@
 [![License](https://img.shields.io/github/license/dolbyio-samples/blog-firebase-functions)](LICENSE)
 
 ![Blog Picture](https://dolby.io/wp-content/uploads/2021/09/Using-Firebase-Functions-as-a-Conferencing-Authentication-Service.jpg)
+
 # Use Firebase Functions as Authentication Service
 This repository will deploy a Firebase Function that will be used to generate an access token to initialize the SDK.
 
